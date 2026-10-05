@@ -15,7 +15,6 @@ interface RatingWidgetProps {
   onRatingChanged?: (newAvg: number, newCount: number, userRating: number | null) => void;
 }
 
-const RATING_STEPS = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 const STARS = [1, 2, 3, 4, 5];
 
 /**
@@ -40,7 +39,7 @@ function StarGlyph({
         <Star className="absolute inset-0 w-full h-full fill-amber-400 text-amber-400 stroke-[1.5] transition-colors" />
       )}
 
-      {/* Media estrella rellena (cortada exactamente al 50%) */}
+      {/* Media estrella rellena (cortada al 50%) */}
       {fill === "half" && (
         <div className="absolute inset-0 w-1/2 overflow-hidden pointer-events-none">
           <Star className={`${sizeClass} max-w-none fill-amber-400 text-amber-400 stroke-[1.5] transition-colors`} />
@@ -132,159 +131,122 @@ export default function RatingWidget({
   };
 
   return (
-    <div className="bg-psiko-card rounded-2xl p-5 border border-psiko-border">
-      {/* Cabecera con Promedio */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-3xl font-black text-white">
-              {averageRating > 0 ? averageRating.toFixed(1) : "—"}
-            </span>
-            <span className="text-sm font-semibold text-slate-400">/ 5</span>
-            <div className="flex items-center gap-0.5 ml-1">
-              {STARS.map((s) => {
-                const roundedAvg = Math.round(averageRating * 2) / 2;
-                const fill =
-                  roundedAvg >= s ? "full" : roundedAvg >= s - 0.5 ? "half" : "empty";
-                return (
-                  <StarGlyph
-                    key={s}
-                    fill={fill}
-                    sizeClass="w-4 h-4"
-                  />
-                );
-              })}
-            </div>
+    <div className="bg-psiko-card rounded-2xl p-5 border border-psiko-border w-full overflow-hidden space-y-4">
+      {/* 1. Cabecera con Promedio General */}
+      <div className="pb-4 border-b border-slate-800">
+        <div className="flex items-center gap-2">
+          <span className="text-3xl font-black text-white">
+            {averageRating > 0 ? averageRating.toFixed(1) : "—"}
+          </span>
+          <span className="text-sm font-semibold text-slate-400">/ 5</span>
+          <div className="flex items-center gap-0.5 ml-1">
+            {STARS.map((s) => {
+              const roundedAvg = Math.round(averageRating * 2) / 2;
+              const fill =
+                roundedAvg >= s ? "full" : roundedAvg >= s - 0.5 ? "half" : "empty";
+              return (
+                <StarGlyph
+                  key={s}
+                  fill={fill}
+                  sizeClass="w-4 h-4"
+                />
+              );
+            })}
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Basado en {ratingCount} {ratingCount === 1 ? "calificación" : "calificaciones"} de Psikos
-          </p>
         </div>
+        <p className="text-xs text-slate-400 mt-1">
+          Basado en {ratingCount} {ratingCount === 1 ? "calificación" : "calificaciones"} de Psikos
+        </p>
+      </div>
 
-        {/* Zona interactiva de calificación */}
-        <div className="flex flex-col items-start sm:items-end">
-          <div className="flex items-center justify-between w-full sm:w-auto gap-2 mb-1.5">
-            <span className="text-xs font-semibold text-slate-300">
-              {hoverRating !== null ? (
-                <span className="text-amber-400 font-bold flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> Votar: {hoverRating} {hoverRating === 1 ? "estrella" : "estrellas"}
-                </span>
-              ) : userRating !== null ? (
-                "Tu calificación:"
-              ) : (
-                "Califica esta película:"
-              )}
-            </span>
-            {userRating !== null && (
-              <span className="text-xs font-bold text-amber-400 flex items-center gap-1">
+      {/* 2. Zona de Calificación del Usuario */}
+      <div className="pb-4 border-b border-slate-800 space-y-2.5">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs font-semibold text-slate-300">
+            {hoverRating !== null ? (
+              <span className="text-amber-400 font-bold flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5" /> Votar: {hoverRating} {hoverRating === 1 ? "estrella" : "estrellas"}
+              </span>
+            ) : userRating !== null ? (
+              "Tu calificación:"
+            ) : (
+              "Califica esta película:"
+            )}
+          </span>
+
+          {userRating !== null && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
                 ★ {userRating}
               </span>
-            )}
-          </div>
-
-          {/* 5 Estrellas Interactivas con Soporte de Mitades */}
-          <div
-            className="flex items-center gap-1 bg-slate-900/60 p-1.5 rounded-xl border border-slate-800"
-            onMouseLeave={() => setHoverRating(null)}
-          >
-            <div className="flex items-center">
-              {STARS.map((star) => {
-                const fill = getStarFill(star, activeValue);
-
-                return (
-                  <div key={star} className="relative group/star p-0.5">
-                    {/* Visual de la estrella */}
-                    <StarGlyph
-                      fill={fill}
-                      sizeClass="w-7 h-7 sm:w-8 sm:h-8"
-                      className="transition-transform group-hover/star:scale-110"
-                    />
-
-                    {/* Mitad Izquierda (media estrella: star - 0.5) */}
-                    <button
-                      type="button"
-                      disabled={loading}
-                      onMouseEnter={() => setHoverRating(star - 0.5)}
-                      onClick={() => handleRate(star - 0.5)}
-                      className="absolute left-0 top-0 w-1/2 h-full z-10 cursor-pointer focus:outline-none"
-                      title={`${star - 0.5} estrellas`}
-                      aria-label={`Calificar con ${star - 0.5} estrellas`}
-                    />
-
-                    {/* Mitad Derecha (estrella completa: star) */}
-                    <button
-                      type="button"
-                      disabled={loading}
-                      onMouseEnter={() => setHoverRating(star)}
-                      onClick={() => handleRate(star)}
-                      className="absolute right-0 top-0 w-1/2 h-full z-10 cursor-pointer focus:outline-none"
-                      title={`${star} estrellas`}
-                      aria-label={`Calificar con ${star} estrellas`}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-
-            {userRating !== null && (
               <button
                 type="button"
                 onClick={handleDeleteRating}
                 disabled={loading}
-                className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors ml-1"
+                className="p-1 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
                 title="Eliminar mi calificación"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5" />
               </button>
-            )}
-          </div>
-
-          {userRating !== null && (
-            <span className="text-[11px] text-amber-400/90 font-medium mt-1 flex items-center gap-1">
-              <Check className="w-3 h-3 text-emerald-400" /> Has votado {userRating} {userRating === 1 ? "estrella" : "estrellas"}
-            </span>
+            </div>
           )}
         </div>
-      </div>
 
-      {/* Selector Rápido de Puntuación (Pills 0.5 a 5.0) */}
-      <div className="mt-4 pt-3 border-t border-slate-800/80">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-            Votación rápida (medias estrellas)
-          </span>
-          <span className="text-[11px] text-slate-500">
-            Haz clic en la mitad de la estrella o en un botón
-          </span>
-        </div>
-        <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
-          {RATING_STEPS.map((val) => {
-            const isSelected = activeValue === val;
+        {/* 5 Estrellas Interactivas con Soporte de Mitad */}
+        <div
+          className="flex items-center justify-center gap-1 sm:gap-2 bg-slate-900/70 py-3 px-2 rounded-2xl border border-slate-800"
+          onMouseLeave={() => setHoverRating(null)}
+        >
+          {STARS.map((star) => {
+            const fill = getStarFill(star, activeValue);
+
             return (
-              <button
-                key={val}
-                type="button"
-                disabled={loading}
-                onClick={() => handleRate(val)}
-                onMouseEnter={() => setHoverRating(val)}
-                onMouseLeave={() => setHoverRating(null)}
-                className={`py-1.5 rounded-xl text-xs font-bold transition-all text-center border ${
-                  isSelected
-                    ? "bg-amber-400 text-slate-950 border-amber-300 font-black shadow-lg shadow-amber-400/20 scale-105"
-                    : "bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border-slate-800 hover:border-slate-700"
-                }`}
-                title={`Calificar con ${val} estrellas`}
-              >
-                {val}
-              </button>
+              <div key={star} className="relative group/star p-0.5">
+                {/* Visual de la estrella */}
+                <StarGlyph
+                  fill={fill}
+                  sizeClass="w-8 h-8 sm:w-9 sm:h-9"
+                  className="transition-transform group-hover/star:scale-110"
+                />
+
+                {/* Mitad Izquierda (media estrella: star - 0.5) */}
+                <button
+                  type="button"
+                  disabled={loading}
+                  onMouseEnter={() => setHoverRating(star - 0.5)}
+                  onClick={() => handleRate(star - 0.5)}
+                  className="absolute left-0 top-0 w-1/2 h-full z-10 cursor-pointer focus:outline-none"
+                  title={`${star - 0.5} estrellas`}
+                  aria-label={`Calificar con ${star - 0.5} estrellas`}
+                />
+
+                {/* Mitad Derecha (estrella completa: star) */}
+                <button
+                  type="button"
+                  disabled={loading}
+                  onMouseEnter={() => setHoverRating(star)}
+                  onClick={() => handleRate(star)}
+                  className="absolute right-0 top-0 w-1/2 h-full z-10 cursor-pointer focus:outline-none"
+                  title={`${star} estrellas`}
+                  aria-label={`Calificar con ${star} estrellas`}
+                />
+              </div>
             );
           })}
         </div>
+
+        {userRating !== null && (
+          <div className="text-center pt-0.5">
+            <span className="text-[11px] text-amber-400/90 font-medium inline-flex items-center gap-1">
+              <Check className="w-3 h-3 text-emerald-400" /> Has votado {userRating} {userRating === 1 ? "estrella" : "estrellas"}
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Barras de Distribución de Votos */}
+      {/* 3. Barras de Distribución de Votos */}
       {distribution && distribution.length > 0 && (
-        <div className="mt-5 pt-4 border-t border-slate-800/80 space-y-1.5">
+        <div className="space-y-1.5">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
             Distribución de votos
           </p>
