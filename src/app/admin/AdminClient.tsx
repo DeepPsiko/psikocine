@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   Lock,
   Unlock,
+  Shield,
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
 import UserAvatar from "@/components/UserAvatar";
@@ -115,6 +116,28 @@ export default function AdminClient({
       }
     } catch {
       toast("Error de conexión", "error");
+    }
+  };
+
+  // Toggle user role
+  const handleToggleRole = async (userId: string, currentRole: string) => {
+    const nextRole = currentRole === "ADMIN" ? "USER" : "ADMIN";
+    const actionText = nextRole === "ADMIN" ? "hacer Administrador a" : "quitar permisos de Admin a";
+    if (!confirm(`¿Deseas ${actionText} este usuario?`)) return;
+
+    try {
+      const res = await fetch(`/api/users/${userId}/role`, { method: "PUT" });
+      const data = await res.json();
+      if (res.ok) {
+        setUsers((prev) =>
+          prev.map((u) => (u.id === userId ? { ...u, role: data.role } : u))
+        );
+        toast(`Rol cambiado a ${data.role === "ADMIN" ? "Administrador" : "Usuario"}`, "success");
+      } else {
+        toast(data.error || "Error al cambiar rol", "error");
+      }
+    } catch {
+      toast("Error de conexión al cambiar rol", "error");
     }
   };
 
@@ -594,7 +617,7 @@ export default function AdminClient({
               <thead className="bg-slate-900/80 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
                 <tr>
                   <th className="p-4">Usuario</th>
-                  <th className="p-4">Correo</th>
+                  <th className="p-4">Rol</th>
                   <th className="p-4">Estado</th>
                   <th className="p-4 text-right">Acciones</th>
                 </tr>
@@ -614,7 +637,18 @@ export default function AdminClient({
                         <p className="text-[10px] text-slate-500">@{u.username}</p>
                       </div>
                     </td>
-                    <td className="p-4">{u.email || "—"}</td>
+                    <td className="p-4">
+                      {u.role === "ADMIN" ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+                          <Shield className="w-3 h-3 text-indigo-400" />
+                          Admin
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-800 text-slate-300 border border-slate-700">
+                          Usuario
+                        </span>
+                      )}
+                    </td>
                     <td className="p-4">
                       {u.isBlocked ? (
                         <span className="text-rose-400 font-bold">Bloqueado</span>
@@ -623,6 +657,17 @@ export default function AdminClient({
                       )}
                     </td>
                     <td className="p-4 text-right space-x-2">
+                      <button
+                        onClick={() => handleToggleRole(u.id, u.role)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors border ${
+                          u.role === "ADMIN"
+                            ? "bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700"
+                            : "bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border-indigo-500/30"
+                        }`}
+                        title={u.role === "ADMIN" ? "Cambiar a Usuario normal" : "Ascender a Administrador"}
+                      >
+                        {u.role === "ADMIN" ? "Quitar Admin" : "Hacer Admin"}
+                      </button>
                       <button
                         onClick={() => handleToggleBlock(u.id, u.isBlocked)}
                         className={`p-1.5 rounded-lg inline-block ${

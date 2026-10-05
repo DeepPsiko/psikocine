@@ -176,7 +176,14 @@ export default function Navbar({ initialUser }: NavbarProps) {
                   {isUserMenuOpen && (
                     <div className="absolute right-0 mt-2 w-56 glass-dropdown rounded-2xl shadow-2xl p-2 z-50 border border-slate-800 animate-in fade-in slide-in-from-top-2">
                       <div className="px-3 py-2 border-b border-slate-800/80">
-                        <p className="text-xs text-slate-400">Conectado como</p>
+                        <div className="flex items-center justify-between gap-1.5">
+                          <p className="text-xs text-slate-400">Conectado como</p>
+                          {user.role === "ADMIN" && (
+                            <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                              Admin
+                            </span>
+                          )}
+                        </div>
                         <p className="text-sm font-semibold text-white truncate">@{user.username}</p>
                       </div>
 
@@ -208,14 +215,16 @@ export default function Navbar({ initialUser }: NavbarProps) {
                           Mi Watchlist
                         </Link>
 
-                        <Link
-                          href="/admin"
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2 text-sm text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 rounded-xl transition-colors font-medium"
-                        >
-                          <ShieldAlert className="w-4 h-4 text-indigo-400" />
-                          Panel de Control
-                        </Link>
+                        {user.role === "ADMIN" && (
+                          <Link
+                            href="/admin"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-2.5 px-3 py-2 text-sm text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 rounded-xl transition-colors font-medium"
+                          >
+                            <ShieldAlert className="w-4 h-4 text-indigo-400" />
+                            Panel de Control
+                          </Link>
+                        )}
                       </div>
 
                       <div className="pt-1 border-t border-slate-800/80">
@@ -298,7 +307,14 @@ export default function Navbar({ initialUser }: NavbarProps) {
                     className="w-9 h-9 text-sm border border-indigo-500/50"
                   />
                   <div>
-                    <p className="text-sm font-semibold text-white">{user.name}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-semibold text-white">{user.name}</p>
+                      {user.role === "ADMIN" && (
+                        <span className="text-[9px] font-extrabold uppercase px-1 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                          Admin
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-slate-400">@{user.username}</p>
                   </div>
                 </div>
@@ -330,14 +346,16 @@ export default function Navbar({ initialUser }: NavbarProps) {
                   Mi Watchlist
                 </Link>
 
-                <Link
-                  href="/admin"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-indigo-400 rounded-xl"
-                >
-                  <ShieldAlert className="w-4 h-4" />
-                  Panel de Control
-                </Link>
+                {user.role === "ADMIN" && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 text-sm text-indigo-400 rounded-xl"
+                  >
+                    <ShieldAlert className="w-4 h-4" />
+                    Panel de Control
+                  </Link>
+                )}
 
                 <button
                   onClick={() => {

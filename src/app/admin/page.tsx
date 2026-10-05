@@ -18,6 +18,9 @@ export default async function AdminPage() {
   if (!currentUser) {
     redirect("/login");
   }
+  if (currentUser.role !== "ADMIN") {
+    redirect("/");
+  }
 
   // 1. Fetch Stats
   const moviesCount = await prisma.movie.count();
