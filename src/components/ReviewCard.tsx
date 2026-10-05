@@ -160,7 +160,7 @@ export default function ReviewCard({
         </Link>
 
         {/* Rating given by this user */}
-        {review.userRating && (
+        {review.userRating != null && review.userRating > 0 && (
           <div className="flex items-center gap-1 bg-amber-500/10 px-2.5 py-1 rounded-xl border border-amber-500/20 text-amber-400 text-xs font-bold shrink-0">
             <Star className="w-3.5 h-3.5 fill-amber-400" />
             <span>{review.userRating}</span>

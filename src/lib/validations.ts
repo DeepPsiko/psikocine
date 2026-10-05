@@ -44,10 +44,10 @@ export const movieSchema = z.object({
 export const ratingSchema = z.object({
   value: z
     .number()
-    .min(0.5, "Mínimo 0.5")
-    .max(5.0, "Máximo 5.0")
-    .refine((val) => val % 0.5 === 0, {
-      message: "La calificación debe ser en incrementos de 0.5",
+    .min(0.5, "Mínimo 0.5 estrellas")
+    .max(5.0, "Máximo 5.0 estrellas")
+    .refine((val) => [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].includes(val), {
+      message: "La calificación debe ser en incrementos de 0.5 (entre 0.5 y 5.0)",
     }),
 });
 
