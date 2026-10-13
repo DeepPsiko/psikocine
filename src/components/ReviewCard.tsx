@@ -12,9 +12,11 @@ import {
   Send,
   X,
   Check,
+  Film,
 } from "lucide-react";
 import SpoilerBlock from "./SpoilerBlock";
 import UserAvatar from "./UserAvatar";
+import MoviePoster from "./MoviePoster";
 import { ReviewItem, SafeUser } from "@/types";
 import { timeAgo } from "@/lib/utils";
 import { useToast } from "./Toast";
@@ -22,6 +24,7 @@ import { useToast } from "./Toast";
 interface ReviewCardProps {
   review: ReviewItem;
   currentUser: SafeUser | null;
+  showMovie?: boolean;
   onReviewDeleted?: (id: string) => void;
   onReviewUpdated?: (updatedReview: ReviewItem) => void;
 }
@@ -29,6 +32,7 @@ interface ReviewCardProps {
 export default function ReviewCard({
   review,
   currentUser,
+  showMovie = false,
   onReviewDeleted,
   onReviewUpdated,
 }: ReviewCardProps) {
@@ -97,7 +101,7 @@ export default function ReviewCard({
       if (res.ok) {
         toast("Opinión actualizada", "success");
         setIsEditing(false);
-        if (onReviewUpdated) onReviewUpdated(data.review);
+        if (onReviewUpdated) onReviewUpdated({ ...data.review, movie: review.movie });
       } else {
         toast(data.error || "Error al actualizar", "error");
       }
@@ -141,6 +145,32 @@ export default function ReviewCard({
 
   return (
     <div className="bg-psiko-card rounded-2xl p-5 border border-psiko-border">
+      {/* Movie Info Banner */}
+      {showMovie && review.movie && (
+        <Link
+          href={`/movies/${review.movie.id}`}
+          className="flex items-center gap-3 pb-3.5 mb-3.5 border-b border-slate-800/80 group/movie"
+        >
+          <div className="w-10 h-14 rounded-lg overflow-hidden bg-slate-900 border border-slate-700 shrink-0 shadow-sm">
+            <MoviePoster
+              src={review.movie.poster}
+              title={review.movie.title}
+              year={review.movie.year}
+              className="w-full h-full object-cover group-hover/movie:scale-105 transition-transform"
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1">
+              <Film className="w-3 h-3" /> Película reseñada
+            </span>
+            <h4 className="text-sm sm:text-base font-black text-white group-hover/movie:text-indigo-400 transition-colors truncate">
+              {review.movie.title}{" "}
+              <span className="text-xs font-semibold text-slate-400">({review.movie.year})</span>
+            </h4>
+          </div>
+        </Link>
+      )}
+
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <Link href={`/users/${review.user.username}`} className="flex items-center gap-3 group">

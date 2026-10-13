@@ -73,6 +73,12 @@ export interface ReviewItem {
   userId: string;
   movieId: string;
   createdAt: string;
+  movie?: {
+    id: string;
+    title: string;
+    year: number;
+    poster: string;
+  };
   user: {
     id: string;
     name: string;

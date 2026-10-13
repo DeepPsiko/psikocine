@@ -145,6 +145,14 @@ export default async function UserProfilePage({
     userId: r.userId,
     movieId: r.movieId,
     createdAt: r.createdAt.toISOString(),
+    movie: r.movie
+      ? {
+          id: r.movie.id,
+          title: r.movie.title,
+          year: r.movie.year,
+          poster: r.movie.poster,
+        }
+      : undefined,
     user: {
       id: user.id,
       name: user.name,

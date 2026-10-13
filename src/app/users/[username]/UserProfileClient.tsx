@@ -280,8 +280,9 @@ export default function UserProfileClient({
                   key={rev.id}
                   review={rev}
                   currentUser={currentUser}
+                  showMovie={true}
                   onReviewDeleted={(id) => setReviews((prev) => prev.filter((r) => r.id !== id))}
-                  onReviewUpdated={(up) => setReviews((prev) => prev.map((r) => r.id === up.id ? up : r))}
+                  onReviewUpdated={(up) => setReviews((prev) => prev.map((r) => r.id === up.id ? { ...up, movie: r.movie } : r))}
                 />
               ))
             )}
