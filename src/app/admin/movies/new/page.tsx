@@ -32,7 +32,7 @@ export default function NewMoviePage() {
   // Form states
   const [title, setTitle] = useState("");
   const [originalTitle, setOriginalTitle] = useState("");
-  const [year, setYear] = useState<number | "">(new Date().getFullYear());
+  const [year, setYear] = useState<number | "">("");
   const [description, setDescription] = useState("");
   const [poster, setPoster] = useState("");
   const [backdrop, setBackdrop] = useState("");
@@ -122,28 +122,29 @@ export default function NewMoviePage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-8">
-      <div>
-        <Link
-          href="/admin"
-          className="text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors mb-3"
-        >
-          <ArrowLeft className="w-4 h-4" /> Volver al panel de administración
-        </Link>
-        <h1 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-2.5">
-          <Film className="w-7 h-7 text-indigo-400" /> Agregar Nueva Película
-        </h1>
-        <p className="text-xs text-slate-400 mt-1">
-          Ingresa la información detallada para incorporar el film al catálogo de Psikos.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <Link
+            href="/admin"
+            className="text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors mb-3"
+          >
+            <ArrowLeft className="w-4 h-4" /> Volver al panel de administración
+          </Link>
+          <h1 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-2.5">
+            <Film className="w-7 h-7 text-indigo-400" /> Agregar Nueva Película
+          </h1>
+          <p className="text-xs text-slate-400 mt-1">
+            Ingresa la información detallada para incorporar el film al catálogo de Psikos.
+          </p>
+        </div>
+
+        <MovieAiAutofill onAutofill={handleAutofill} />
       </div>
 
       <form
         onSubmit={handleSubmit}
         className="bg-psiko-card rounded-3xl p-6 sm:p-8 border border-psiko-border shadow-2xl space-y-6"
       >
-        {/* Asistente IA Gemini */}
-        <MovieAiAutofill onAutofill={handleAutofill} />
-
         {/* Title and Original Title */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">

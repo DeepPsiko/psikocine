@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Star, Trash2, Check, Sparkles } from "lucide-react";
+import { Star, Trash2, Check } from "lucide-react";
 import { useToast } from "./Toast";
 import { RatingDistribution } from "@/types";
 
@@ -165,7 +165,7 @@ export default function RatingWidget({
           <span className="text-xs font-semibold text-slate-300">
             {hoverRating !== null ? (
               <span className="text-amber-400 font-bold flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5" /> Votar: {hoverRating} {hoverRating === 1 ? "estrella" : "estrellas"}
+                <Star className="w-3.5 h-3.5 fill-amber-400" /> Votar: {hoverRating} {hoverRating === 1 ? "estrella" : "estrellas"}
               </span>
             ) : userRating !== null ? (
               "Tu calificación:"
