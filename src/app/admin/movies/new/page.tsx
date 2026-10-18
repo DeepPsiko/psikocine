@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Film, ArrowLeft, Plus, Check } from "lucide-react";
 import { useToast } from "@/components/Toast";
 import MovieImageUploader from "@/components/MovieImageUploader";
+import MovieAiAutofill from "@/components/MovieAiAutofill";
 
 const AVAILABLE_GENRES = [
   "Acción",
@@ -45,6 +46,30 @@ export default function NewMoviePage() {
     setSelectedGenres((prev) =>
       prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
     );
+  };
+
+  const handleAutofill = (data: {
+    title: string;
+    originalTitle: string;
+    year: number;
+    duration: number;
+    director: string;
+    cast: string;
+    country: string;
+    description: string;
+    genres: string[];
+  }) => {
+    if (data.title) setTitle(data.title);
+    if (data.originalTitle) setOriginalTitle(data.originalTitle);
+    if (data.year) setYear(data.year);
+    if (data.duration) setDuration(data.duration);
+    if (data.director) setDirector(data.director);
+    if (data.cast) setCast(data.cast);
+    if (data.country) setCountry(data.country);
+    if (data.description) setDescription(data.description);
+    if (data.genres && data.genres.length > 0) {
+      setSelectedGenres(data.genres);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -116,6 +141,9 @@ export default function NewMoviePage() {
         onSubmit={handleSubmit}
         className="bg-psiko-card rounded-3xl p-6 sm:p-8 border border-psiko-border shadow-2xl space-y-6"
       >
+        {/* Asistente IA Gemini */}
+        <MovieAiAutofill onAutofill={handleAutofill} />
+
         {/* Title and Original Title */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
